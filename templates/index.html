@@ -1,0 +1,179 @@
+ <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/uikit.min.css') }}" />
+    <script src="{{ url_for('static', filename='js/uikit.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/uikit-icons.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+    <title>Fake-Net - {{ topic }}</title>
+    <style>
+    .trend_section {
+        padding-top: 30px;
+    }
+
+    .article_section {
+        padding-top: 30px;
+    }
+
+    .articles {
+        overflow-y: scroll;
+        max-height: 500px;
+    }
+
+    .trend_list {
+        padding: 30px;
+    }
+
+    .trend_title {
+        text-align: center;
+    }
+
+    .logo-fancy {
+        font-weight: 500;
+        font-family: 'Roboto Mono', monospace;
+        color: #fff;
+    }
+
+    body {
+        font-family: 'Roboto Mono', monospace;
+    }
+
+    .summary {
+        text-align: justify;
+        overflow-y: scroll;
+        max-height: 500px;
+    }
+
+    .trend_list{
+        text-align: justify;
+        overflow-y: scroll;
+        max-height: 400px;
+        max-width: 200px;
+
+    }
+
+    .mysearch {
+        font-size: 20px !important;
+    }
+
+    .modal-news{
+        overflow-y: scroll !important;
+        max-height: 70% !important;
+    }
+    </style>
+</head>
+<script type="text/javascript">
+UIkit.modal(element, options);
+</script>
+
+<body>
+    <div class="uk-section-primary uk-preserve-color">
+        <div uk-sticky="animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent uk-light; top: 200">
+            <nav class="uk-navbar-container">
+                <div class="uk-container uk-container-expand">
+                    <div uk-navbar>
+                        <a class="uk-navbar-item uk-logo my-class logo-fancy" href="#" style="color:#fff;">Fake-net.</a>
+                        <div class="uk-navbar-left">
+                            <ul class="uk-navbar-nav">
+                                <li class="uk-active"><a href="{{ url_for('index') }}">Summarizer</a></li>
+                                <li><a href="{{ url_for('fake_check') }}">Fake-Net</a></li>
+                            </ul>
+                        </div>
+                        <div class="uk-navbar-right">
+                            <ul class="uk-navbar-nav">
+                                <li><a href="{{ url_for('shutdown') }}">Shutdown Server</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <form class="uk-search uk-search-large uk-width-1-1">
+        <span uk-search-icon></span>
+        <input class="uk-search-input  mysearch" name="query" id="search_topics" type="search" placeholder="Search Topic..." value="{{ topic }}">
+        <input type="submit" style="position: absolute; left: -9999px" />
+    </form>
+    <div class="uk-child-width-expand@s " uk-grid>
+        <div class="trend_section uk-width-auto@m">
+            <div class="trend_title">
+                <h3>Trending Topics</h3>
+            </div>
+            <div class="trend_list">
+                <ul class="uk-list uk-list-divider">
+                    {% set i = 1 %} {% for topic in trends %}
+                    <li class="trend_items"><a alt="IMG {{ topic }}" href="{{ url_for('index',query=topic) }}">{{ loop.index }}.&nbsp;&nbsp;{{ topic }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="trend_section uk-width-1-3@m">
+            <div class="trend_title">
+                <h3>Summary</h3>
+            </div>
+            <div class="summary">
+                <ul>
+                    {% for sentences in summary %}
+                    <li>{{ sentences }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="article_section uk-width-expand@m">
+            <div class="trend_title">
+                <h3>Credible Articles</h3>
+            </div>
+            <div class="articles">
+                {% set i = 1 %} {% for article in articles %}
+                <div class="uk-card uk-card-default uk-grid-collapse uk-child-width-1-2@s uk-margin" uk-grid>
+                    <div class="uk-card-media-left uk-cover-container">
+                        <img src="{{ article.urlToImage }}" alt="IMG not found" uk-cover>
+                        <canvas width="600" height="400"></canvas>
+                    </div>
+                    <div>
+                        {% if article.score > 70 %}
+                        <div class="uk-card-badge uk-label uk-" style="background-color: #0e6dcd">{{ article.score }} %</div>
+                        {% elif article.score > 50 %}
+                        <div class="uk-card-badge uk-label uk-" style="background-color: #faa05a">{{ article.score }} %</div>
+                        {% elif article.score > 30 %}
+                        <div class="uk-card-badge uk-label uk-" style="background-color: #f0506e">{{ article.score }} %</div>
+                        {% else %}
+                        <div class="uk-card-badge uk-label uk-" style="background-color: #080808">{{ article.score }} %</div>
+                        {%- endif %}
+                        <div class="uk-card-body">
+                            <a class="uk-button uk-button-link uk-margin-small-right" uk-toggle="target: #modal{{loop.index}}"><h3 class="uk-card-title">{{ article.title }}</h3></a>
+                            <a  href="{{ article.url }}" style=" color: #009688">Visit article</a>
+                            <br>
+                            <a href="{{ article.surl }}">{{article.source}}</a>
+                        </div>
+                    </div>
+                </div>
+                <div id="modal{{loop.index}}" class="uk-modal-full" uk-modal>
+                    <div class="uk-modal-dialog">
+                        <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
+                        <div class="uk-grid-collapse uk-child-width-1-2@s uk-flex-middle" uk-grid>
+                            <div class="uk-background-cover" style="background-image: url('{{article.urlToImage}}');" uk-height-viewport></div>
+                            <div class="uk-padding-large modal-news">
+                                <h1>{{article.title}}</h1>
+                                <ul>
+                                    {%for sentence in article.summary %}
+                                        <li>{{sentence}}</li>
+                                    {% endfor %}    
+                                </ul>
+                                <a href = "{{ article.url }}" ><h4 style=" color: #009688;"> Read Complete Article</h4></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

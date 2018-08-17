@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/uikit.min.css') }}" />
+    <script src="{{ url_for('static', filename='js/uikit.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/uikit-icons.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/jquery.js') }}"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet">
+    <title>Fake-Net</title>
+    <style>
+    .outer {
+        padding: 30px;
+    }
+
+    .form_div {
+        margin-left: 40px;
+    }
+
+    .logo-fancy {
+        font-weight: 500;
+        color: #fff;
+    }
+
+    body {
+        font-family: 'Roboto Mono', monospace;
+    }
+
+    .
+    </style>
+</head>
+
+<body>
+    <div class="uk-section-primary uk-preserve-color">
+        <div uk-sticky="animation: uk-animation-slide-top; sel-target: .uk-navbar-container; cls-active: uk-navbar-sticky; cls-inactive: uk-navbar-transparent uk-light; top: 200">
+            <nav class="uk-navbar-container">
+                <div class="uk-container uk-container-expand">
+                    <div uk-navbar>
+                        <a class="uk-navbar-item uk-logo my-class logo-fancy" href="#" style="color:#fff;">Fake-net.</a>
+                        <div class="uk-navbar-left">
+                            <ul class="uk-navbar-nav">
+                                <li><a href="{{ url_for('index') }}">Summarizer</a></li>
+                                <li class="uk-active"><a href="{{ url_for('fake_check') }}">Fake-Net</a></li>
+                            </ul>
+                        </div>
+                        <div class="uk-navbar-right">
+                            <ul class="uk-navbar-nav">
+                                <li><a href="{{ url_for('shutdown') }}">Shutdown Server</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+    <form class="uk-search uk-search-large uk-width-1-1">
+        <span uk-search-icon></span>
+        <input class="uk-search-input  mysearch" name="url" id="search_topics" type="search" placeholder="Enter URL..." value="{{ article.url }}">
+        <input type="submit" style="position: absolute; left: -9999px" />
+    </form>
+    <div class="uk-child-width-expand@s uk-text-center" uk-grid>
+        <div class="form_div outer">
+            <div class="uk-margin">
+                <textarea id="test_txt" class="uk-textarea" rows="20" placeholder="Paste article text here......">{{article.body}}</textarea>
+                <button style="margin-top: 30px" class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom" onclick="fake_check()">Check</button>
+            </div>
+        </div>
+        <div class="result_div outer">
+            <div style="margin-top: 30px" class="uk-card uk-card-primary uk-card-hover uk-card-body uk-light">
+                <h3 class="uk-card-title">True  %</h3>
+                <h2 id="true_percent">{{article.true}}</h2>
+            </div>
+            <div style="margin-top: 30px" class="uk-card uk-card-secondary uk-card-hover uk-card-body uk-light">
+                <h3 class="uk-card-title">Fake  %</h3>
+                <h2 id="fake_percent">{{article.false}}</h2>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+function fake_check() {
+    check_txt = $("#test_txt").val();
+    console.log(check_txt)
+    data = {
+        txt: check_txt
+    };
+    $.ajax({
+        type: 'POST',
+        url: "{{ url_for('fake_api') }}",
+        data: JSON.stringify(data, null, '\t'),
+        contentType: 'application/json',
+        success: function(data) {
+            // do something with the received data
+            console.log(data)
+            $("#true_percent").text(data.true);
+            $("#fake_percent").text(data.fake);
+        }
+    });
+}
+</script>
