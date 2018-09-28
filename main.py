@@ -47,7 +47,7 @@ def fake_api():
         mystr = request.json["txt"]
         true,false = article_check(mystr)
     return jsonify(fake=false, true=true)
-
+#server shutdown
 @app.route('/shutdown', methods=['GET'])
 def shutdown():
     func = request.environ.get('werkzeug.server.shutdown')
@@ -55,7 +55,7 @@ def shutdown():
         raise RuntimeError('Not running with the Werkzeug Server')
     func()
     return 'Server shutting down...'
-    
+ #assigning scores to the articles
 def articles_check(articles):
     for article in articles:
         X = vectorizer.transform([article['body']])
