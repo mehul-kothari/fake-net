@@ -36,7 +36,7 @@ def get_google_trendings():
 	if time.time() - filetime > (5 * 60 * 60):
 		print("Fetching new trends")
 		# pn3 india, pn1 us, pn9 uk
-		page = requests.get('http://www.google.com/trends/hottrends/atom/feed?pn=p1')
+		page = requests.get('http://www.google.com/trends/hottrends/atom/feed?pn=p1') #api call
 		doc = page.text
 		soup = BeautifulSoup(doc, 'html.parser')
 		for topics in soup.find_all("title"):
