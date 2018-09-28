@@ -32,6 +32,7 @@ def get_google_trendings():
 	else:
 		filetime = 1900
 	trending = []
+	#updating new trends after sometime
 	if time.time() - filetime > (5 * 60 * 60):
 		print("Fetching new trends")
 		# pn3 india, pn1 us, pn9 uk
